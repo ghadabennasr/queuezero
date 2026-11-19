@@ -1,0 +1,26 @@
+
+# Java / Maven
+backend/target/
+hs_err_pid*.log
+*.class
+
+# Android / Gradle
+android/build/
+android/app/build/
+android/.gradle/
+android/local.properties
+*.apk
+
+# IDE
+.idea/
+android/.idea/
+*.iml
+
+# Secrets and local config
+.env
+*.env
+!.env.example
+
+# OS
+Thumbs.db
+.DS_Store

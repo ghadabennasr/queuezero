@@ -1,11 +1,14 @@
 package com.queuezero.app.data.remote
 
+import android.util.Log
 import com.queuezero.app.data.AppError
 import com.queuezero.app.data.AppResult
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.serialization.json.Json
 import retrofit2.HttpException
+
+private const val TAG = "QueueZero"
 
 /** Runs a Retrofit call and turns every failure into a typed AppResult. */
 suspend fun <T> safeApiCall(json: Json, block: suspend () -> T): AppResult<T> {
@@ -14,10 +17,12 @@ suspend fun <T> safeApiCall(json: Json, block: suspend () -> T): AppResult<T> {
     } catch (e: CancellationException) {
         throw e
     } catch (e: IOException) {
+        Log.w(TAG, "Network error: ${e::class.java.name}: ${e.message}", e)
         AppResult.Failure(AppError.NoNetwork)
     } catch (e: HttpException) {
         AppResult.Failure(parseHttpError(e, json))
     } catch (e: Exception) {
+        Log.e(TAG, "Unexpected error", e)
         AppResult.Failure(AppError.Unknown(e.message))
     }
 }

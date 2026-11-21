@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -26,10 +28,32 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.queuezero.app.ui.theme.QueueZeroTheme
 
+/** Connects the screen to its ViewModel. */
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun LoginRoute(
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    LoginScreen(
+        state = state,
+        onLogin = viewModel::login,
+        onInputChanged = viewModel::clearError,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun LoginScreen(
+    state: LoginUiState,
+    onLogin: (email: String, password: String) -> Unit,
+    onInputChanged: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var showPassword by rememberSaveable { mutableStateOf(false) }
@@ -61,9 +85,11 @@ fun LoginScreen(modifier: Modifier = Modifier) {
             onValueChange = {
                 email = it
                 emailError = null
+                onInputChanged()
             },
             label = { Text("Email") },
             singleLine = true,
+            enabled = !state.isLoading,
             isError = emailError != null,
             supportingText = { emailError?.let { Text(it) } },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -77,9 +103,11 @@ fun LoginScreen(modifier: Modifier = Modifier) {
             onValueChange = {
                 password = it
                 passwordError = null
+                onInputChanged()
             },
             label = { Text("Password") },
             singleLine = true,
+            enabled = !state.isLoading,
             isError = passwordError != null,
             supportingText = { passwordError?.let { Text(it) } },
             visualTransformation = if (showPassword) {
@@ -100,17 +128,35 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
         Button(
             onClick = {
+                info = null
                 emailError = if (email.contains("@") && email.contains(".")) null
                 else "Enter a valid email"
                 passwordError = if (password.length >= 8) null
                 else "At least 8 characters"
-                info = if (emailError == null && passwordError == null) {
-                    "Backend not connected yet"
-                } else null
+                if (emailError == null && passwordError == null) {
+                    onLogin(email, password)
+                }
             },
+            enabled = !state.isLoading,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Log in")
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("Log in")
+            }
+        }
+
+        state.errorMessage?.let {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center
+            )
         }
 
         info?.let {
@@ -118,7 +164,10 @@ fun LoginScreen(modifier: Modifier = Modifier) {
             Text(text = it, color = MaterialTheme.colorScheme.secondary)
         }
 
-        TextButton(onClick = { info = "Registration screen comes later" }) {
+        TextButton(
+            onClick = { info = "Registration screen comes in the next step" },
+            enabled = !state.isLoading
+        ) {
             Text("Create an account")
         }
 
@@ -136,6 +185,6 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun LoginScreenPreview() {
     QueueZeroTheme {
-        LoginScreen()
+        LoginScreen(state = LoginUiState(), onLogin = { _, _ -> }, onInputChanged = {})
     }
 }

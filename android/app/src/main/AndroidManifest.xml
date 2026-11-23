@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 17+: needed to reach a backend on the local network (emulator alias 10.0.2.2, or a LAN IP). -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
 
     <application
         android:name=".QueueZeroApp"

@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
 
     // Networking: Retrofit (the BOM keeps all Retrofit artifacts on the same version)
     implementation(platform(libs.retrofit.bom))
@@ -66,3 +67,4 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
+

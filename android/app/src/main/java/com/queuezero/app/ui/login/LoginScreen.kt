@@ -35,6 +35,7 @@ import com.queuezero.app.ui.theme.QueueZeroTheme
 /** Connects the screen to its ViewModel. */
 @Composable
 fun LoginRoute(
+    onCreateAccount: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 ) {
@@ -43,6 +44,7 @@ fun LoginRoute(
         state = state,
         onLogin = viewModel::login,
         onInputChanged = viewModel::clearError,
+        onCreateAccount = onCreateAccount,
         modifier = modifier
     )
 }
@@ -52,6 +54,7 @@ fun LoginScreen(
     state: LoginUiState,
     onLogin: (email: String, password: String) -> Unit,
     onInputChanged: () -> Unit,
+    onCreateAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var email by rememberSaveable { mutableStateOf("") }
@@ -59,7 +62,6 @@ fun LoginScreen(
     var showPassword by rememberSaveable { mutableStateOf(false) }
     var emailError by rememberSaveable { mutableStateOf<String?>(null) }
     var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
-    var info by rememberSaveable { mutableStateOf<String?>(null) }
 
     Column(
         modifier = modifier
@@ -128,7 +130,6 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                info = null
                 emailError = if (email.contains("@") && email.contains(".")) null
                 else "Enter a valid email"
                 passwordError = if (password.length >= 8) null
@@ -159,13 +160,8 @@ fun LoginScreen(
             )
         }
 
-        info?.let {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = it, color = MaterialTheme.colorScheme.secondary)
-        }
-
         TextButton(
-            onClick = { info = "Registration screen comes in the next step" },
+            onClick = onCreateAccount,
             enabled = !state.isLoading
         ) {
             Text("Create an account")
@@ -185,6 +181,11 @@ fun LoginScreen(
 @Composable
 private fun LoginScreenPreview() {
     QueueZeroTheme {
-        LoginScreen(state = LoginUiState(), onLogin = { _, _ -> }, onInputChanged = {})
+        LoginScreen(
+            state = LoginUiState(),
+            onLogin = { _, _ -> },
+            onInputChanged = {},
+            onCreateAccount = {}
+        )
     }
 }

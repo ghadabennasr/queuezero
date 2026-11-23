@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 /** Connects the screen to its ViewModel and loads the profile every time it appears. */
 @Composable
 fun HomeRoute(
+    onExplore: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
 ) {
@@ -34,6 +35,7 @@ fun HomeRoute(
         state = state,
         onRetry = viewModel::load,
         onLogout = viewModel::logout,
+        onExplore = onExplore,
         modifier = modifier
     )
 }
@@ -43,6 +45,7 @@ fun HomeScreen(
     state: HomeUiState,
     onRetry: () -> Unit,
     onLogout: () -> Unit,
+    onExplore: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -76,8 +79,10 @@ fun HomeScreen(
                 Text(text = state.user.email, style = MaterialTheme.typography.bodyLarge)
                 Text(text = "Role: ${state.user.role}", style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(24.dp))
+                Button(onClick = onExplore) { Text("Explore locations") }
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "Locations and live queues arrive in the next steps.",
+                    text = "Waiting times are estimates based on simulated data.",
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center
                 )

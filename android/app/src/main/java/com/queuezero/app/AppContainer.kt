@@ -6,7 +6,9 @@ import com.queuezero.app.data.local.TokenStore
 import com.queuezero.app.data.remote.ApiConfig
 import com.queuezero.app.data.remote.AuthApi
 import com.queuezero.app.data.remote.AuthInterceptor
+import com.queuezero.app.data.remote.LocationApi
 import com.queuezero.app.data.repository.AuthRepository
+import com.queuezero.app.data.repository.LocationRepository
 import java.util.concurrent.TimeUnit
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -37,4 +39,6 @@ class AppContainer(context: Context) {
         .build()
 
     val authRepository = AuthRepository(retrofit.create(AuthApi::class.java), tokenStore, json)
+
+    val locationRepository = LocationRepository(retrofit.create(LocationApi::class.java), json)
 }

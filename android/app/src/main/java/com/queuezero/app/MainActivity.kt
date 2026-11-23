@@ -16,8 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.queuezero.app.ui.home.HomeRoute
 import com.queuezero.app.ui.navigation.AuthNavHost
+import com.queuezero.app.ui.navigation.MainNavHost
 import com.queuezero.app.ui.theme.QueueZeroTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
                             modifier = contentModifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) { CircularProgressIndicator() }
-                        true -> HomeRoute(modifier = contentModifier)
+                        true -> MainNavHost(modifier = contentModifier)
                         false -> AuthNavHost(modifier = contentModifier)
                     }
                 }
